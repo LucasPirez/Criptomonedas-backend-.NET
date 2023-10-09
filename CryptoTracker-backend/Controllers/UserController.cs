@@ -1,5 +1,4 @@
 ﻿using CryptoTracker_backend.Contexts;
-using CryptoTracker_backend.entities;
 using CryptoTracker_backend.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

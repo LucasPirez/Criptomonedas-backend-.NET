@@ -16,9 +16,9 @@ namespace CryptoTracker_backend.entities
 
         public DateTime DateCreate { get; set; }
 
-        public int UserDataId { get; set; }
+        public int UserId { get; set; }
 
-        public UserData UserData { get; set; } = null!;
+        public User User { get; set; } = null!;
 
     }
 }

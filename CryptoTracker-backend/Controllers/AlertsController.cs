@@ -47,7 +47,7 @@ namespace CryptoTracker_backend.Controllers
                                 a.MinPrice,
                                 a.MaxPrice,
                             }).ToListAsync();*/
-            var alerts = await _context.UserDatas.Include(u => u.Alerts).FirstOrDefaultAsync(u=> u.Id == idUser);
+            var alerts = await _context.Users.Include(u => u.Alerts).FirstOrDefaultAsync(u=> u.Id == idUser);
 
             var jsonSerializerOptions = new JsonSerializerOptions
             {
@@ -75,7 +75,7 @@ namespace CryptoTracker_backend.Controllers
                 MaxPrice = alertCreacion.MaxPrice,
                 MinPrice = alertCreacion.MinPrice,
                 DateCreate = alertCreacion.DateCreate,
-                UserDataId = userDataId
+                UserId = userDataId
 
             };
        

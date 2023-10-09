@@ -11,7 +11,7 @@ namespace CryptoTracker_backend.Contexts
 
         }
         public DbSet<Alert> Alerts { get; set; }
+        public DbSet<UserCredentials> UsersCredentials { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<UserData> UserDatas { get; set; }
     }
 }
