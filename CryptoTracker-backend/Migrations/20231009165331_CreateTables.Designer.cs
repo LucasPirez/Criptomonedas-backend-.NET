@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CryptoTracker_backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231007153953_userData")]
-    partial class userData
+    [Migration("20231009165331_CreateTables")]
+    partial class CreateTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,35 +33,6 @@ namespace CryptoTracker_backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserDataId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserDataId");
-
-                    b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("CryptoTracker_backend.Entities.UserData", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Age")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -76,7 +47,33 @@ namespace CryptoTracker_backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserData");
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("CryptoTracker_backend.Entities.UserCredentials", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UsersCredentials");
                 });
 
             modelBuilder.Entity("CryptoTracker_backend.entities.Alert", b =>
@@ -100,20 +97,41 @@ namespace CryptoTracker_backend.Migrations
                     b.Property<double>("MinPrice")
                         .HasColumnType("float");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Alerts");
                 });
 
-            modelBuilder.Entity("CryptoTracker_backend.Entities.User", b =>
+            modelBuilder.Entity("CryptoTracker_backend.Entities.UserCredentials", b =>
                 {
-                    b.HasOne("CryptoTracker_backend.Entities.UserData", "UserData")
+                    b.HasOne("CryptoTracker_backend.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserDataId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("UserData");
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("CryptoTracker_backend.entities.Alert", b =>
+                {
+                    b.HasOne("CryptoTracker_backend.Entities.User", "User")
+                        .WithMany("Alerts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("CryptoTracker_backend.Entities.User", b =>
+                {
+                    b.Navigation("Alerts");
                 });
 #pragma warning restore 612, 618
         }
