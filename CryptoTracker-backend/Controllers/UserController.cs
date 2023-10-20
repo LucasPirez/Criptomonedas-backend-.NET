@@ -2,22 +2,27 @@
 using CryptoTracker_backend.DTOs;
 using CryptoTracker_backend.Entities;
 using CryptoTracker_backend.Models.Authorization;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Http.HttpResults;
+using CryptoTracker_backend.Services;
+using CryptoTracker_backend.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace CryptoTracker_backend.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class UserController
+    public class UserController :  ControllerBase
     {
         private readonly ApplicationDbContext _context;
-
-        public UserController(ApplicationDbContext context)
+        private readonly ITokenService _tokenService;
+      
+        public UserController(ApplicationDbContext context , ITokenService tokenService)
         {
             _context = context;
+            _tokenService = tokenService;
+        
         }
 
         [HttpPost("Login")]
@@ -27,24 +32,23 @@ namespace CryptoTracker_backend.Controllers
 
             if (result == null)
             {
-
-                return new BadRequestObjectResult(new {message = "Username y/o Password incorrects" });
+                return new UnauthorizedObjectResult(new {message = "Username y/o Password incorrects" });
             }
 
             if (BCrypt.Net.BCrypt.Verify(authorization.Password, result.Password))
             {
-                AuthorizationResponse response = new AuthorizationResponse
+                AuthorizationResponse response = new()
                 {
                     Message= "Logeado con exito",
                     userData = result.User,
-                    Token = "eue"
+                    Token = _tokenService.CreateToken(result)
                 };
 
                 return new JsonResult(response);
             }
             else
             {
-                return new BadRequestObjectResult(new { message = "Username y/o Password incorrects" });
+                return new UnauthorizedObjectResult(new { message = "Username y/o Password incorrects" });
             }
 
            
@@ -52,9 +56,10 @@ namespace CryptoTracker_backend.Controllers
 
         [HttpGet("obtain")]
         public async Task<ActionResult<List<User>>> Geta()
-        {
-            var result = await _context.Users.ToListAsync();
+        {  
 
+            var result = await _context.Users.ToListAsync();
+       
             if (result == null)
             {
                 return new NotFoundResult();
@@ -64,7 +69,11 @@ namespace CryptoTracker_backend.Controllers
 
 
         [HttpPost("createUser")]
-    public async Task<ActionResult> Post(UserCreacionDTO userCreation) {
+        public async Task<ActionResult> Post(UserCreacionDTO userCreation) {
+
+
+            if (!Roles.IsValidRole(userCreation.Roles))
+                return new BadRequestObjectResult(new { message = "The Role is invalid"});
 
             var user = new User
             {
@@ -79,6 +88,7 @@ namespace CryptoTracker_backend.Controllers
             {
                 Password = bCryptPassword,
                 UserName = userCreation.UserName,
+                Role = userCreation.Roles,
                 User = user
             };
 
@@ -86,11 +96,43 @@ namespace CryptoTracker_backend.Controllers
             await _context.Users.AddAsync(user);
 
             await  _context.SaveChangesAsync();
-                return new OkResult();
+
+            AuthorizationResponse response = new()
+            {
+
+                Message = "Usuer Created",
+                Token = _tokenService.CreateToken(UserCredentials),
+                userData = user
+
+            };
+
+            return new JsonResult(response);
+           
+        }
+
+        [HttpPut("editUser"),Authorize]
+        public async Task<ActionResult> EditUser(int idUser,UserEditDTO userEdit)
+        {
+            var userData = await _context.Users.FindAsync(idUser);
+
+            if (userData == null)
+            {
+                return new NotFoundResult(); // Otra opción podría ser retornar un BadRequest() dependiendo de la lógica de tu aplicación
+            }
+
+            userData.Email = userEdit.Email;
+            userData.FirstName = userEdit.FirstName;
+            userData.LastName = userEdit.LastName;
+
+            _context.Entry(userData).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();
             
+            return new OkResult();
 
+        }
 
-    }
+        
 
     }
 }
