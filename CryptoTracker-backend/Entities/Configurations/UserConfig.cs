@@ -11,7 +11,7 @@ namespace CryptoTracker_backend.Entities.Configurations
             builder.HasIndex(x => x.Email).IsUnique();
             builder.Property(x => x.FirstName).HasMaxLength(30);
             builder.Property(x => x.LastName).HasMaxLength(30);
-
+          
         }
     }
 }

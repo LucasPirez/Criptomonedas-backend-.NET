@@ -8,7 +8,7 @@ namespace CryptoTracker_backend.entities
 
         public int Id { get; set; }
 
-        public string CoinName { get; set; } = "";
+        public string CoinName { get; set; } 
 
         public double MinPrice { get; set; }
 
@@ -17,8 +17,8 @@ namespace CryptoTracker_backend.entities
         public DateTime DateCreate { get; set; }
 
         public int UserId { get; set; }
-
-        public User User { get; set; } = null!;
+        [JsonIgnore]
+        public User User { get; set; } 
 
     }
 }
