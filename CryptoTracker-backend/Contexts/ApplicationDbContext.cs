@@ -1,6 +1,7 @@
 ﻿using CryptoTracker_backend.entities;
 using CryptoTracker_backend.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace CryptoTracker_backend.Contexts
 {
@@ -10,8 +11,19 @@ namespace CryptoTracker_backend.Contexts
         {
 
         }
-        public DbSet<Alert> Alerts { get; set; }
-        public DbSet<UserCredentials> UsersCredentials { get; set; }
-        public DbSet<User> Users { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            
+        }
+
+
+        public DbSet<Alert> Alerts  => Set<Alert>();
+        public DbSet<UserCredentials> UsersCredentials => Set<UserCredentials>();
+        public DbSet<User> Users  => Set<User>();
+        
+        public DbSet<CoinInAlert> CoinsInAlerts => Set<CoinInAlert>();
     }
 }

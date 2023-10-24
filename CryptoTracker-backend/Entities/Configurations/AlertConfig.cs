@@ -9,7 +9,7 @@ namespace CryptoTracker_backend.Entities.Configurations
     {
         public void Configure(EntityTypeBuilder<Alert> builder)
         {
-            builder.HasIndex(x => new { x.UserId, x.CoinName }).IsUnique();
+            builder.HasIndex(x => new { x.UserId, x.CoinId }).IsUnique();
         }
     }
 }
