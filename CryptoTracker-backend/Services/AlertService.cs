@@ -18,7 +18,10 @@ namespace CryptoTracker_backend.Services
 
         public async Task<string> GetCoinsInAlerts()
         {
-           List<CoinInAlert> coinsResponse = await _context.CoinsInAlerts.Where(u=> u.AlertWithThisCoin.Any()).ToListAsync();
+            List<CoinInAlert> coinsResponse = await _context.CoinsInAlerts.Where(u=> u.AlertWithThisCoin.Any()).ToListAsync();
+
+            if (coinsResponse.Count == 0)
+                return string.Empty;
 
             string CoinString = "";
 
@@ -129,6 +132,23 @@ namespace CryptoTracker_backend.Services
             await _context.SaveChangesAsync();
 
             return new OkResult();
+        }
+
+        public async Task  DeleteListOfAlerts(List<Alert> listAlert)
+        {
+            var alertsToDelete = _context.Alerts.AsEnumerable().Where(alert =>
+                                  listAlert.Any(
+                                      listAlerta =>
+                                  alert.UserId == listAlerta.UserId && 
+                                  alert.CoinId == listAlerta.CoinId)
+                                  
+                                  )
+                                  .ToList();
+
+            _context.Alerts.RemoveRange(alertsToDelete);
+
+            await _context.SaveChangesAsync();
+
         }
     }
 }

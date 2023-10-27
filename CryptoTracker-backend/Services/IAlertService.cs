@@ -15,5 +15,6 @@ namespace CryptoTracker_backend.Services
         public  Task<ActionResult> AddAlert(int UserDataId, AlertCreacionDTO Alert);
         public  Task<ActionResult> EditAlert(int UserDataId, AlertCreacionDTO Alert);
         public  Task<ActionResult> DeleteAlert(int UserDataId, string coinName);
+        public Task DeleteListOfAlerts(List<Alert> listAlert);
     }
 }
