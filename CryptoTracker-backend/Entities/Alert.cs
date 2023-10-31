@@ -8,7 +8,9 @@ namespace CryptoTracker_backend.entities
 
         public int Id { get; set; }
 
-        public string CoinName { get; set; } 
+        public string CoinId { get; set; }
+        [JsonIgnore]
+        public CoinInAlert Coin { get; set; }
 
         public double MinPrice { get; set; }
 
