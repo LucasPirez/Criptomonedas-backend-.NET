@@ -1,11 +1,7 @@
-﻿using CryptoTracker_backend.Contexts;
-using CryptoTracker_backend.DTOs;
+﻿using CryptoTracker_backend.DTOs;
 using CryptoTracker_backend.Services;
-using CryptoTracker_backend.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Data;
 
 
 namespace CryptoTracker_backend.Controllers
@@ -15,19 +11,18 @@ namespace CryptoTracker_backend.Controllers
  
     public class AlertsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
         private readonly ITokenService _tokenService;
         private readonly IAlertService _alertService;
 
-        public AlertsController(ApplicationDbContext context, ITokenService tokenService,IAlertService alertService)
+        public AlertsController( ITokenService tokenService,IAlertService alertService)
         {
-            _context = context;
             _tokenService = tokenService;
             _alertService = alertService;
         }
 
 
-        [HttpGet("obtainAll"), Authorize(Roles = Roles.Admin)]
+        /*[HttpGet("obtainAll"), Authorize(Roles = Roles.Admin)]*/
+        [HttpGet("obtainAll")]
         public async Task<ActionResult> ObteinAll()
         {
             var alert = await _alertService.GetAllAlerts();
