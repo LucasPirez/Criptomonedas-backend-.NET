@@ -1,3 +1,4 @@
+using CryptoTracker_backend.Alerts;
 using CryptoTracker_backend.Contexts;
 using CryptoTracker_backend.Middlewares;
 using CryptoTracker_backend.Services;
@@ -6,15 +7,21 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
-using System.Net.Http;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
 builder.Services.AddDbContext<ApplicationDbContext>(opciones => opciones.UseSqlServer("name=DefaultConnection"));
+
+builder.Services.AddHostedService<AlertWorker>()
+    .AddSingleton<IPriceChecker, PriceChecker>()
+    .AddSingleton<INotificationService, EmailNotificationSevice>();
+    
+   builder.Services.AddScoped<IAlertService, AlertService>();
+   builder.Services.AddScoped<IUserService, UserService>();
+
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
@@ -26,11 +33,22 @@ builder.Services.AddSwaggerGen(options =>
     }); 
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
-builder.Services.AddHttpClient("CrytpoAPI",a=> {
+
+builder.Services.AddHttpClient("CryptoAPI",a=> {
     a.BaseAddress = new Uri("https://api.coingecko.com");
+ });
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name:"CryptoCors", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000").AllowAnyHeader()
+                                                   .AllowAnyMethod(); 
+    });
 });
+
 builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<IAlertService, AlertService>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -46,13 +64,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("CryptoCors");
 
 app.UseHttpsRedirection();
 
@@ -62,7 +80,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.UseMiddleware<ErrorHandlerMiddleware>();
-
+/*app.UseMiddleware<ErrorHandlerMiddleware>();*/
 
 app.Run();
