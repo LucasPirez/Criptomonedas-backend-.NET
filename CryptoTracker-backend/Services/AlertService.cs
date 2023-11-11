@@ -2,8 +2,10 @@
 using CryptoTracker_backend.DTOs;
 using CryptoTracker_backend.entities;
 using CryptoTracker_backend.Entities;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net.WebSockets;
 
 namespace CryptoTracker_backend.Services
 {
@@ -86,18 +88,18 @@ namespace CryptoTracker_backend.Services
             };
 
             _context.Alerts.Add(alert);
-
             await _context.SaveChangesAsync();
 
-            return new OkResult();
+
+            var response = await GetUserAlerts(UserDataId);
+
+            return new OkObjectResult(response);
         }
 
         public async Task<ActionResult> EditAlert(int UserDataId, AlertCreacionDTO Alert)
         {
 
-            var alertToEdit = await _context.Alerts.Where(
-                a => a.UserId == UserDataId && a.Coin.CoinId == Alert.CoinName)
-                 .FirstOrDefaultAsync();
+            var alertToEdit = await FindAlert(UserDataId, Alert.CoinName);
 
             if (alertToEdit == null)
             {
@@ -112,26 +114,28 @@ namespace CryptoTracker_backend.Services
 
             await _context.SaveChangesAsync();
 
-            return new OkResult();
+            var response = await GetUserAlerts(UserDataId);
+
+            return new OkObjectResult(response);
         }
 
         public async Task<ActionResult> DeleteAlert(int UserDataId, string CoinName)
         {
 
-            var alertToEdit = await _context.Alerts.Where(
-                a => a.UserId == UserDataId && a.Coin.CoinId == CoinName)
-                 .FirstOrDefaultAsync();
+            var alertToDelete = await FindAlert(UserDataId, CoinName);
 
-            if (alertToEdit == null)
+            if (alertToDelete == null)
             {
                 return new NotFoundObjectResult(new { message = "No alert was found for that cryptocurrency, please try again " });
             }
 
-            _context.Alerts.Remove(alertToEdit);
+            _context.Alerts.Remove(alertToDelete);
 
             await _context.SaveChangesAsync();
 
-            return new OkResult();
+            var response = await GetUserAlerts(UserDataId);
+
+            return new OkObjectResult(response);
         }
 
         public async Task  DeleteListOfAlerts(List<Alert> listAlert)
@@ -149,6 +153,15 @@ namespace CryptoTracker_backend.Services
 
             await _context.SaveChangesAsync();
 
+        }
+
+        private async Task<Alert?> FindAlert(int UserDataId, string CoinName)
+        {
+            var alert = await _context.Alerts.Where(
+                a => a.UserId == UserDataId && a.Coin.CoinId == CoinName)
+                 .FirstOrDefaultAsync();
+
+            return alert;
         }
     }
 }
