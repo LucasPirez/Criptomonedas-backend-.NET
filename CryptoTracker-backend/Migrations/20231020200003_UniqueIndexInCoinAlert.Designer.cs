@@ -4,6 +4,7 @@ using CryptoTracker_backend.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CryptoTracker_backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231020200003_UniqueIndexInCoinAlert")]
+    partial class UniqueIndexInCoinAlert
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,12 +27,19 @@ namespace CryptoTracker_backend.Migrations
 
             modelBuilder.Entity("CryptoTracker_backend.Entities.CoinInAlert", b =>
                 {
-                    b.Property<string>("CoinId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CoinName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("CoinId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("CoinId")
+                    b.HasIndex("CoinName")
                         .IsUnique();
 
                     b.ToTable("CoinsInAlerts");
@@ -107,7 +117,7 @@ namespace CryptoTracker_backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CoinId")
+                    b.Property<string>("CoinName")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -125,9 +135,7 @@ namespace CryptoTracker_backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CoinId");
-
-                    b.HasIndex("UserId", "CoinId")
+                    b.HasIndex("UserId", "CoinName")
                         .IsUnique();
 
                     b.ToTable("Alerts");
@@ -146,26 +154,13 @@ namespace CryptoTracker_backend.Migrations
 
             modelBuilder.Entity("CryptoTracker_backend.entities.Alert", b =>
                 {
-                    b.HasOne("CryptoTracker_backend.Entities.CoinInAlert", "Coin")
-                        .WithMany("AlertWithThisCoin")
-                        .HasForeignKey("CoinId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("CryptoTracker_backend.Entities.User", "User")
                         .WithMany("Alerts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Coin");
-
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("CryptoTracker_backend.Entities.CoinInAlert", b =>
-                {
-                    b.Navigation("AlertWithThisCoin");
                 });
 
             modelBuilder.Entity("CryptoTracker_backend.Entities.User", b =>

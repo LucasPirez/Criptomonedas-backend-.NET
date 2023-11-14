@@ -4,6 +4,7 @@ using CryptoTracker_backend.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CryptoTracker_backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231020202918_UpdateCreateAlert")]
+    partial class UpdateCreateAlert
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,12 +27,19 @@ namespace CryptoTracker_backend.Migrations
 
             modelBuilder.Entity("CryptoTracker_backend.Entities.CoinInAlert", b =>
                 {
-                    b.Property<string>("CoinId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CoinName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("CoinId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("CoinId")
+                    b.HasIndex("CoinName")
                         .IsUnique();
 
                     b.ToTable("CoinsInAlerts");
@@ -107,9 +117,8 @@ namespace CryptoTracker_backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CoinId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("CoinId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("DateCreate")
                         .HasColumnType("datetime2");

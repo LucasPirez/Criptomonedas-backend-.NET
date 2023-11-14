@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CryptoTracker_backend.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateTables : Migration
+    public partial class newMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,15 +15,15 @@ namespace CryptoTracker_backend.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    UserDataId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    FirstName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_Users", x => x.UserDataId);
                 });
 
             migrationBuilder.CreateTable(
@@ -32,7 +32,7 @@ namespace CryptoTracker_backend.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CoinName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CoinName = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     MinPrice = table.Column<double>(type: "float", nullable: false),
                     MaxPrice = table.Column<double>(type: "float", nullable: false),
                     DateCreate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -45,7 +45,7 @@ namespace CryptoTracker_backend.Migrations
                         name: "FK_Alerts_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id",
+                        principalColumn: "UserDataId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -55,8 +55,9 @@ namespace CryptoTracker_backend.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -66,19 +67,32 @@ namespace CryptoTracker_backend.Migrations
                         name: "FK_UsersCredentials_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id",
+                        principalColumn: "UserDataId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Alerts_UserId",
+                name: "IX_Alerts_UserId_CoinName",
                 table: "Alerts",
-                column: "UserId");
+                columns: new[] { "UserId", "CoinName" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Email",
+                table: "Users",
+                column: "Email",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UsersCredentials_UserId",
                 table: "UsersCredentials",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UsersCredentials_UserName",
+                table: "UsersCredentials",
+                column: "UserName",
+                unique: true);
         }
 
         /// <inheritdoc />
