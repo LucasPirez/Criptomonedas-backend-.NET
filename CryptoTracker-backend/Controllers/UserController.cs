@@ -46,7 +46,8 @@ namespace CryptoTracker_backend.Controllers
             }
         }
 
-        [HttpGet("obtain")]
+        [HttpGet("obtain"),Authorize(Roles = Roles.Admin)]
+
         public async Task<ActionResult<List<User>>> Geta()
         {  
 

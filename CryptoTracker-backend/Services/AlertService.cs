@@ -2,10 +2,8 @@
 using CryptoTracker_backend.DTOs;
 using CryptoTracker_backend.entities;
 using CryptoTracker_backend.Entities;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Net.WebSockets;
 
 namespace CryptoTracker_backend.Services
 {

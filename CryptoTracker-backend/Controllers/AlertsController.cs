@@ -1,5 +1,6 @@
 ﻿using CryptoTracker_backend.DTOs;
 using CryptoTracker_backend.Services;
+using CryptoTracker_backend.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,8 +22,8 @@ namespace CryptoTracker_backend.Controllers
         }
 
 
-        /*[HttpGet("obtainAll"), Authorize(Roles = Roles.Admin)]*/
-        [HttpGet("obtainAll")]
+        [HttpGet("obtainAll"), Authorize(Roles = Roles.Admin)]
+
         public async Task<ActionResult> ObteinAll()
         {
             var alert = await _alertService.GetAllAlerts();
