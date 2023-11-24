@@ -3,7 +3,7 @@ using CryptoTracker_backend.Services;
 using CryptoTracker_backend.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
+using System.Net;
 
 namespace CryptoTracker_backend.Controllers
 {
@@ -41,18 +41,16 @@ namespace CryptoTracker_backend.Controllers
         public async Task<ActionResult> ObtenerAlertsN(int idUser)
         {
             if (_tokenService.IsUserToken(idUser,User))
-                return new UnauthorizedObjectResult(new { message = "token is invalid for this user" });
+                return new UnauthorizedObjectResult(new ApiErrorDTO("token is invalid for this user","Unauthorized", HttpStatusCode.Unauthorized));
 
             var alerts = await _alertService.GetUserAlerts(idUser);
 
             if (alerts == null)
             {
-                return  new NotFoundObjectResult(new
-                {
-                    message = "No alert was found for that cryptocurrency, please try again"
-                });
-                }
-            
+                return new NotFoundObjectResult(new ApiErrorDTO("token is invalid for this user",
+                    "Not Found", HttpStatusCode.NotFound));
+            }
+
             return new JsonResult(alerts);
         }
 
@@ -62,7 +60,7 @@ namespace CryptoTracker_backend.Controllers
         {
            
             if (_tokenService.IsUserToken(userDataId,User))
-                return new UnauthorizedObjectResult(new { message = "token is invalid for this user" });
+                return new UnauthorizedObjectResult(new ApiErrorDTO("token is invalid for this user", "Unauthorized", HttpStatusCode.Unauthorized));
 
             return await _alertService.AddAlert(userDataId, alertCreacion);
         }
@@ -72,7 +70,7 @@ namespace CryptoTracker_backend.Controllers
         public async Task<ActionResult> EditAlert(int userDataId, AlertCreacionDTO alertCreacion)
         {
             if (_tokenService.IsUserToken(userDataId, User))
-                return new UnauthorizedObjectResult(new { message = "The token is invalid for that user" });
+                return new UnauthorizedObjectResult(new ApiErrorDTO("token is invalid for this user", "Unauthorized", HttpStatusCode.Unauthorized));
 
             return await _alertService.EditAlert(userDataId, alertCreacion);
         }
@@ -82,7 +80,7 @@ namespace CryptoTracker_backend.Controllers
         public async Task<ActionResult> DeletAlert(int userDataId, string CoinName)
         {
             if (_tokenService.IsUserToken(userDataId,User))
-                return new UnauthorizedObjectResult(new { message = "The token is invalid for that user" });
+                return new UnauthorizedObjectResult(new ApiErrorDTO("token is invalid for this user", "Unauthorized", HttpStatusCode.Unauthorized));
 
             return await _alertService.DeleteAlert(userDataId, CoinName);
         }

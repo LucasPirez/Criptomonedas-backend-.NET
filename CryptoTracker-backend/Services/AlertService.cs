@@ -4,6 +4,7 @@ using CryptoTracker_backend.entities;
 using CryptoTracker_backend.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace CryptoTracker_backend.Services
 {
@@ -101,7 +102,7 @@ namespace CryptoTracker_backend.Services
 
             if (alertToEdit == null)
             {
-                return new NotFoundObjectResult(new { message = "No alert was found for that cryptocurrency, please try again " });
+                return new NotFoundObjectResult(new ApiErrorDTO("No alert was found for that cryptocurrency, please try again ", "Not Found", HttpStatusCode.NotFound));
             }
 
             alertToEdit.MinPrice = Alert.MinPrice;
@@ -124,7 +125,7 @@ namespace CryptoTracker_backend.Services
 
             if (alertToDelete == null)
             {
-                return new NotFoundObjectResult(new { message = "No alert was found for that cryptocurrency, please try again " });
+                return new NotFoundObjectResult(new ApiErrorDTO("No alert was found for that cryptocurrency, please try again ", "Not Found", HttpStatusCode.NotFound));
             }
 
             _context.Alerts.Remove(alertToDelete);

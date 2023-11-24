@@ -7,6 +7,7 @@ using CryptoTracker_backend.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace CryptoTracker_backend.Controllers
 {
@@ -31,7 +32,7 @@ namespace CryptoTracker_backend.Controllers
 
             if (result == null)
             {
-                return new UnauthorizedObjectResult(new {message = "Username y/o Password incorrects" });
+                return new UnauthorizedObjectResult(new ApiErrorDTO("Username y/o Password incorrects", "Unauthorized", HttpStatusCode.Unauthorized));
             }
 
             if (BCrypt.Net.BCrypt.Verify(authorization.Password, result.Password))
@@ -42,7 +43,7 @@ namespace CryptoTracker_backend.Controllers
             }
             else
             {
-                return new UnauthorizedObjectResult(new { message = "Username y/o Password incorrects" });
+                return new UnauthorizedObjectResult(new ApiErrorDTO("Username y/o Password incorrects", "Unauthorized", HttpStatusCode.Unauthorized));
             }
         }
 
@@ -65,9 +66,8 @@ namespace CryptoTracker_backend.Controllers
         [Consumes("application/json")]
         public async Task<ActionResult> Post([FromBody]  UserCreacionDTO userCreation) 
         {
-            Console.WriteLine(userCreation);
             if (!Roles.IsValidRole(userCreation.Roles))
-                return new BadRequestObjectResult(new { message = "The Role is invalid"});
+                return new BadRequestObjectResult(new ApiErrorDTO("You don't have access", "Unauthorized", HttpStatusCode.Unauthorized));
 
             (User user, UserCredentials userCredentials) =  _userService.CreateUser(userCreation);
 
