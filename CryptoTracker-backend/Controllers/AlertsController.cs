@@ -24,7 +24,7 @@ namespace CryptoTracker_backend.Controllers
 
         [HttpGet("obtainAll"), Authorize(Roles = Roles.Admin)]
 
-        public async Task<ActionResult> ObteinAll()
+        public async Task<ActionResult> ObtainAll()
         {
             var alert = await _alertService.GetAllAlerts();
 
@@ -38,7 +38,7 @@ namespace CryptoTracker_backend.Controllers
 
 
         [HttpGet("obtainAlerts"), Authorize]
-        public async Task<ActionResult> ObtenerAlertsN(int idUser)
+        public async Task<ActionResult> ObtenerUserAlerts(int idUser)
         {
             if (_tokenService.IsUserToken(idUser,User))
                 return new UnauthorizedObjectResult(new ApiErrorDTO("token is invalid for this user","Unauthorized", HttpStatusCode.Unauthorized));
