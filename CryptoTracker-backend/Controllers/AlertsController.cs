@@ -56,7 +56,7 @@ namespace CryptoTracker_backend.Controllers
 
 
         [HttpPost("Add"), Authorize]
-        public async Task<ActionResult> Post(int userDataId, AlertCreacionDTO alertCreacion)
+        public async Task<ActionResult> AddAlert(int userDataId, AlertCreacionDTO alertCreacion)
         {
            
             if (_tokenService.IsUserToken(userDataId,User))
